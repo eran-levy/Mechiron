@@ -49,7 +49,7 @@ def main():
         # extract prices per each retail
         prices_extractor = PricesExtractor(base_folder)
         prices_extractor.process_gz_files()
-        logging.info("Starting prices extraction step...")
+        logging.info("Finished prices extraction step...")
 
 if __name__ == '__main__':
     main()
