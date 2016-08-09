@@ -18,8 +18,21 @@ class FtpCollector(object):
     def retrieve_files(self):
         os.chdir(self._folder)
         self._connect_ftp()
+        # it sometimes happen we unable to connect
+        retryconnect = True
+        files_list = None
+        while retryconnect:
+            try:
+                files_list = self._ftp_connection.nlst()
+                retryconnect = False
+            except ftplib.all_errors, e:
+                logging.error("Disconnected unexpectedly from ftp server *** Retry... Error: " + str(e))
+                retryconnect = True
+                self._connect_ftp()
+                logging.info("Reconnected FTP: " + self._username)
+
         # for each file in ftp
-        for filename in self._ftp_connection.nlst():
+        for filename in files_list:
             success = True
             fhandle = open(filename, 'wb')
             # it sometimes happen that it gets disconnected, we need to retry -

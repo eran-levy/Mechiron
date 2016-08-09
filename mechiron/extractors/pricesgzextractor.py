@@ -48,40 +48,48 @@ class PricesExtractor(object):
             sub_chain_id = root.find(".//SubChainId").text
             items_elem = root.findall(".//Items/Item")
             for item in items_elem:
-                price_update_date = item.find("PriceUpdateDate")
-                if price_update_date is not None:
-                    price_update_date = price_update_date.text
-                item_code = item.find("ItemCode")
-                if item_code is not None:
-                    item_code = item_code.text.encode('windows-1255')
-                item_name = item.find("ItemName")
-                if item_name is not None:
-                    item_name = item_name.text.replace("#", "-").encode('windows-1255')
-                manufacture_name = item.find("ManufacturerName")
-                if manufacture_name is not None:
-                    manufacture_name = manufacture_name.text.replace("#", "-").encode('windows-1255')
-                manufacture_country = item.find("ManufactureCountry")
-                if manufacture_country is not None:
-                    manufacture_country = manufacture_country.text.replace("#", "-").encode('windows-1255')
-                manufacture_item_desc = item.find("ManufacturerItemDescription")
-                if manufacture_item_desc is not None:
-                    manufacture_item_desc = manufacture_item_desc.text.replace("#", "-").encode('windows-1255')
-                qty = item.find("Quantity")
-                if qty is not None:
-                    qty = qty.text.encode('windows-1255')
-                item_price = item.find("ItemPrice")
-                if item_price is not None:
-                    item_price = item_price.text.encode('windows-1255')
-                item_id = item.find("ItemId")
-                if item_id is not None:
-                    item_id = item_id.text.encode('windows-1255')
+                try:
+                    price_update_date = item.find("PriceUpdateDate")
+                    if price_update_date is not None and price_update_date.text is not None:
+                        price_update_date = price_update_date.text
+                    item_code = item.find("ItemCode")
+                    if item_code is not None and item_code.text is not None:
+                        item_code = item_code.text.encode('windows-1255')
+                    item_name = item.find("ItemName")
+                    if item_name is not None and item_name.text is not None:
+                        item_name = item_name.text.replace("#", "-").encode('windows-1255')
+                    manufacture_name = item.find("ManufacturerName")
+                    if manufacture_name is not None and manufacture_name.text is not None:
+                        manufacture_name = manufacture_name.text.replace("#", "-").encode('windows-1255')
+                    manufacture_country = item.find("ManufactureCountry")
+                    if manufacture_country is not None and manufacture_country.text is not None:
+                        manufacture_country = manufacture_country.text.replace("#", "-").encode('windows-1255')
+                    manufacture_item_desc = item.find("ManufacturerItemDescription")
+                    if manufacture_item_desc is not None and manufacture_item_desc.text is not None:
+                        manufacture_item_desc = manufacture_item_desc.text.replace("#", "-").encode('windows-1255')
+                    qty = item.find("Quantity")
+                    if qty is not None and qty.text is not None:
+                        qty = qty.text.encode('windows-1255')
+                    item_price = item.find("ItemPrice")
+                    if item_price is not None and item_price.text is not None:
+                        item_price = item_price.text.encode('windows-1255')
+                    item_id = item.find("ItemId")
+                    if item_id is not None and item_id.text is not None:
+                        item_id = item_id.text.encode('windows-1255')
 
-                the_line = chain_id+self.csv_line_sep+sub_chain_id+self.csv_line_sep+store_id +\
+
+                    the_line = chain_id+self.csv_line_sep+sub_chain_id+self.csv_line_sep+store_id +\
                            self.csv_line_sep+item_id + self.csv_line_sep + item_price + self.csv_line_sep + \
                            qty + self.csv_line_sep + manufacture_name + self.csv_line_sep + manufacture_country + \
                            self.csv_line_sep + manufacture_item_desc + self.csv_line_sep + item_name + \
                            self.csv_line_sep + item_code + self.csv_line_sep + price_update_date
-                csv_lines.append(the_line.split(self.csv_line_sep))
+                    csv_lines.append(the_line.split(self.csv_line_sep))
+                except TypeError, e:
+                    logging.error(
+                        "Got problem with one of the xml elements... Error: " + str(e))
+                except AttributeError, e:
+                    logging.error(
+                        "Got problem with one of the xml elements and couldnt perform an action... Error: " + str(e))
 
             full_output_filename = csv_output_folder+store_name+".csv"
             if not os.path.isfile(full_output_filename):
