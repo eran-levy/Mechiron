@@ -64,7 +64,7 @@ class StoreExtractor(object):
                 csv_file = self.output_folder + "stores.csv"
                 logging.info("Writing file: " + csv_file)
                 with open(csv_file, "wb") as outfile:
-                    writer = csv.writer(outfile)
+                    writer = csv.writer(outfile, delimiter=self.csv_line_sep)
                     writer.writerow(self.header_row.split(","))
                     for line in csv_lines:
                         writer.writerow(line)

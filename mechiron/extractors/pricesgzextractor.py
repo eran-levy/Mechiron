@@ -95,14 +95,14 @@ class PricesExtractor(object):
             if not os.path.isfile(full_output_filename):
                 with open(full_output_filename, "wb") as outfile:
                     logging.info(full_output_filename + " not exists, writing a new file")
-                    writer = csv.writer(outfile)
+                    writer = csv.writer(outfile, delimiter=self.csv_line_sep)
                     writer.writerow(self.header_line.split(","))
                     for line in csv_lines:
                         writer.writerow(line)
             else:
                 with open(full_output_filename, "a") as outfile:
                     logging.info("Writing to file: " + full_output_filename)
-                    writer = csv.writer(outfile)
+                    writer = csv.writer(outfile, delimiter=self.csv_line_sep)
                     for line in csv_lines:
                         writer.writerow(line)
                     logging.info("Finished writing to file: " + full_output_filename)
