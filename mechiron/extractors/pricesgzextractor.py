@@ -7,6 +7,7 @@ import gzip
 import csv
 from xml.etree.ElementTree import fromstring, ElementTree
 import logging
+from datetime import datetime
 
 
 class PricesExtractor(object):
@@ -20,6 +21,7 @@ class PricesExtractor(object):
         self.csv_line_sep = "#"
         self.header_line = "chain_id,sub_chain_id,store_id,item_id,item_price,qty,manufacture_name" \
                            ",manufacture_country,manufacture_item_desc,item_name,item_code,price_update_date"
+        self.current_time = str(datetime.now().strftime("%Y-%m-%d_%H_%M_%S"))
 
     def process_gz_files(self):
         file_pattern = re.compile('Price.*')
@@ -91,7 +93,9 @@ class PricesExtractor(object):
                     logging.error(
                         "Got problem with one of the xml elements and couldnt perform an action... Error: " + str(e))
 
-            full_output_filename = csv_output_folder+store_name+".csv"
+
+            # file pattern -  retailname_yyyy-mm-dd_HH_MM_SS.csv
+            full_output_filename = csv_output_folder+store_name+"_"+self.current_time+".csv"
             if not os.path.isfile(full_output_filename):
                 with open(full_output_filename, "wb") as outfile:
                     logging.info(full_output_filename + " not exists, writing a new file")

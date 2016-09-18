@@ -6,6 +6,7 @@ import re
 import xml.etree.ElementTree as ETree
 import fnmatch
 import logging
+from datetime import datetime
 
 
 class StoreExtractor(object):
@@ -18,6 +19,7 @@ class StoreExtractor(object):
             os.makedirs(output_folder)
         self.csv_line_sep = "#"
         self.header_row = "chain_id,chain_name,store_id,store_name,store_address,store_city,store_zipcode"
+        self.current_time = str(datetime.now().strftime("%Y-%m-%d_%H_%M_%S"))
 
     def extract_stores_to_csv(self):
         logging.info("Starting stores extractor...")
@@ -60,8 +62,7 @@ class StoreExtractor(object):
                                        store_zipcode
                             csv_lines.append(the_line.split(self.csv_line_sep))
                 logging.info("Successfuly processed file: " + filename + " in " + dir_to_process)
-
-                csv_file = self.output_folder + "stores.csv"
+                csv_file = self.output_folder + "stores_"+self.current_time+".csv"
                 logging.info("Writing file: " + csv_file)
                 with open(csv_file, "wb") as outfile:
                     writer = csv.writer(outfile, delimiter=self.csv_line_sep)
