@@ -18,7 +18,7 @@ class PricesExtractor(object):
         self.output_folder = output_folder
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
-        self.csv_line_sep = "#"
+        self.csv_line_sep = "|"
         self.header_line = "chain_id,sub_chain_id,store_id,item_id,item_price,qty,manufacture_name" \
                            ",manufacture_country,manufacture_item_desc,item_name,item_code,price_update_date"
         self.current_time = str(datetime.now().strftime("%Y-%m-%d_%H_%M_%S"))
@@ -56,43 +56,41 @@ class PricesExtractor(object):
                         price_update_date = price_update_date.text
                     item_code = item.find("ItemCode")
                     if item_code is not None and item_code.text is not None:
-                        item_code = item_code.text.encode('windows-1255')
+                        item_code = item_code.text.encode('utf-8')
                     item_name = item.find("ItemName")
                     if item_name is not None and item_name.text is not None:
-                        item_name = item_name.text.replace("#", "-").encode('windows-1255')
+                        item_name = item_name.text.replace("#", "-").encode('utf-8')
                     manufacture_name = item.find("ManufacturerName")
                     if manufacture_name is not None and manufacture_name.text is not None:
-                        manufacture_name = manufacture_name.text.replace("#", "-").encode('windows-1255')
+                        manufacture_name = manufacture_name.text.replace("#", "-").encode('utf-8')
                     manufacture_country = item.find("ManufactureCountry")
                     if manufacture_country is not None and manufacture_country.text is not None:
-                        manufacture_country = manufacture_country.text.replace("#", "-").encode('windows-1255')
+                        manufacture_country = manufacture_country.text.replace("#", "-").encode('utf-8')
                     manufacture_item_desc = item.find("ManufacturerItemDescription")
                     if manufacture_item_desc is not None and manufacture_item_desc.text is not None:
-                        manufacture_item_desc = manufacture_item_desc.text.replace("#", "-").encode('windows-1255')
+                        manufacture_item_desc = manufacture_item_desc.text.replace("#", "-").encode('utf-8')
                     qty = item.find("Quantity")
                     if qty is not None and qty.text is not None:
-                        qty = qty.text.encode('windows-1255')
+                        qty = qty.text.encode('utf-8')
                     item_price = item.find("ItemPrice")
                     if item_price is not None and item_price.text is not None:
-                        item_price = item_price.text.encode('windows-1255')
+                        item_price = item_price.text.encode('utf-8')
                     item_id = item.find("ItemId")
                     if item_id is not None and item_id.text is not None:
-                        item_id = item_id.text.encode('windows-1255')
-
+                        item_id = item_id.text.encode('utf-8')
 
                     the_line = chain_id+self.csv_line_sep+sub_chain_id+self.csv_line_sep+store_id +\
                            self.csv_line_sep+item_id + self.csv_line_sep + item_price + self.csv_line_sep + \
                            qty + self.csv_line_sep + manufacture_name + self.csv_line_sep + manufacture_country + \
                            self.csv_line_sep + manufacture_item_desc + self.csv_line_sep + item_name + \
                            self.csv_line_sep + item_code + self.csv_line_sep + price_update_date
-                    csv_lines.append(the_line.split(self.csv_line_sep))
+                    csv_lines.append(the_line.decode('utf-8').split(self.csv_line_sep))
                 except TypeError, e:
                     logging.error(
                         "Got problem with one of the xml elements... Error: " + str(e))
                 except AttributeError, e:
                     logging.error(
                         "Got problem with one of the xml elements and couldnt perform an action... Error: " + str(e))
-
 
             # file pattern -  retailname_yyyy-mm-dd_HH_MM_SS.csv
             full_output_filename = csv_output_folder+store_name+"_"+self.current_time+".csv"
@@ -102,11 +100,11 @@ class PricesExtractor(object):
                     writer = csv.writer(outfile, delimiter=self.csv_line_sep)
                     writer.writerow(self.header_line.split(","))
                     for line in csv_lines:
-                        writer.writerow(line)
+                        writer.writerow([unicode(s).encode('utf-8') for s in line])
             else:
                 with open(full_output_filename, "a") as outfile:
                     logging.info("Writing to file: " + full_output_filename)
                     writer = csv.writer(outfile, delimiter=self.csv_line_sep)
                     for line in csv_lines:
-                        writer.writerow(line)
+                        writer.writerow([unicode(s).encode('utf-8') for s in line])
                     logging.info("Finished writing to file: " + full_output_filename)
